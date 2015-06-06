@@ -183,7 +183,7 @@ void setup() {
   frame.addComponentListener(new ComponentAdapter() { 
     public void componentResized(ComponentEvent e) { 
       if (e.getSource()==frame) { 
-        println("OpenBCI_GUI: setup: RESIZED");
+        println("Cortex_GUI: setup: RESIZED");
         screenHasBeenResized = true;
         timeOfLastScreenResize = millis();
         // initializeGUI();
@@ -227,11 +227,11 @@ int drawLoop_counter = 0;
 //used to init system based on initial settings...Called from the "Start System" button in the GUI's ControlPanel
 void initSystem() {
 
-  verbosePrint("OpenBCI_GUI: initSystem: -- Init 0 --");
+  verbosePrint("Cortex_GUI: initSystem: -- Init 0 --");
   timeOfInit = millis(); //store this for timeout in case init takes too long
 
   //prepare data variables
-  verbosePrint("OpenBCI_GUI: initSystem: Preparing data variables...");
+  verbosePrint("Cortex_GUI: initSystem: Preparing data variables...");
   dataBuffX = new float[(int)(dataBuff_len_sec * openBCI.get_fs_Hz())];
   dataBuffY_uV = new float[nchan][dataBuffX.length];
   dataBuffY_filtY_uV = new float[nchan][dataBuffX.length];
@@ -250,20 +250,20 @@ void initSystem() {
   //initialize the data
   prepareData(dataBuffX, dataBuffY_uV, openBCI.get_fs_Hz());
 
-  verbosePrint("OpenBCI_GUI: initSystem: -- Init 1 --");
+  verbosePrint("Cortex_GUI: initSystem: -- Init 1 --");
 
   //initialize the FFT objects
   for (int Ichan=0; Ichan < nchan; Ichan++) { 
     println("a--"+Ichan);
     fftBuff[Ichan] = new FFT(Nfft, openBCI.get_fs_Hz());
   };  //make the FFT objects
-  println("OpenBCI_GUI: initSystem: b");
+  println("Cortex_GUI: initSystem: b");
   initializeFFTObjects(fftBuff, dataBuffY_uV, Nfft, openBCI.get_fs_Hz());
 
   //prepare some signal processing stuff
   //for (int Ichan=0; Ichan < nchan; Ichan++) { detData_freqDomain[Ichan] = new DetectionData_FreqDomain(); }
 
-  verbosePrint("OpenBCI_GUI: initSystem: -- Init 2 --");
+  verbosePrint("Cortex_GUI: initSystem: -- Init 2 --");
 
   //prepare the source of the input data
   switch (eegDataSource) {
@@ -281,16 +281,16 @@ void initSystem() {
     break;
   case DATASOURCE_PLAYBACKFILE:
     //open and load the data file
-    println("OpenBCI_GUI: initSystem: loading playback data from " + playbackData_fname);
+    println("Cortex_GUI: initSystem: loading playback data from " + playbackData_fname);
     try {
       playbackData_table = new Table_CSV(playbackData_fname);
     } 
     catch (Exception e) {
-      println("OpenBCI_GUI: initSystem: could not open file for playback: " + playbackData_fname);
+      println("Cortex_GUI: initSystem: could not open file for playback: " + playbackData_fname);
       println("   : quitting...");
       exit();
     }
-    println("OpenBCI_GUI: initSystem: loading complete.  " + playbackData_table.getRowCount() + " rows of data, which is " + round(float(playbackData_table.getRowCount())/openBCI.get_fs_Hz()) + " seconds of EEG data");
+    println("Cortex_GUI: initSystem: loading complete.  " + playbackData_table.getRowCount() + " rows of data, which is " + round(float(playbackData_table.getRowCount())/openBCI.get_fs_Hz()) + " seconds of EEG data");
 
     //removing first column of data from data file...the first column is a time index and not eeg data
     playbackData_table.removeColumn(0);
@@ -298,14 +298,14 @@ void initSystem() {
   default:
   }
 
-  verbosePrint("OpenBCI_GUI: initSystem: -- Init 3 --");
+  verbosePrint("Cortex_GUI: initSystem: -- Init 3 --");
 
   //initilize the GUI
   initializeGUI();
 
   //final config
   // setBiasState(openBCI.isBiasAuto);
-  verbosePrint("OpenBCI_GUI: initSystem: -- Init 4 --");
+  verbosePrint("Cortex_GUI: initSystem: -- Init 4 --");
 
   //open data file
   if ((eegDataSource == DATASOURCE_NORMAL) || (eegDataSource == DATASOURCE_NORMAL_W_AUX)) openNewLogFile(fileName);  //open a new log file
@@ -317,7 +317,7 @@ void initSystem() {
   }
   //sync GUI default settings with OpenBCI's default settings...
   // openBCI.syncWithHardware(); //this starts the sequence off ... read in OpenBCI_ADS1299 iterates through the rest based on the ASCII trigger "$$$"
-  // verbosePrint("OpenBCI_GUI: initSystem: -- Init 5 [COMPLETE] --");
+  // verbosePrint("Cortex_GUI: initSystem: -- Init 5 [COMPLETE] --");
 }
 
 //so data initialization routines
@@ -374,19 +374,19 @@ void haltSystem() {
 
 void initializeGUI() {
 
-  println("OpenBCI_GUI: initializeGUI: 1");
+  println("Cortex_GUI: initializeGUI: 1");
   String filterDescription = eegProcessing.getFilterDescription();
-  println("OpenBCI_GUI: initializeGUI: 2");
+  println("Cortex_GUI: initializeGUI: 2");
   gui = new Gui_Manager(this, win_x, win_y, nchan, displayTime_sec, default_vertScale_uV, filterDescription, smoothFac[smoothFac_ind]);
-  println("OpenBCI_GUI: initializeGUI: 3");
+  println("Cortex_GUI: initializeGUI: 3");
   //associate the data to the GUI traces
   gui.initDataTraces(dataBuffX, dataBuffY_filtY_uV, fftBuff, eegProcessing.data_std_uV, is_railed, eegProcessing.polarity);
-  println("OpenBCI_GUI: initializeGUI: 4");
+  println("Cortex_GUI: initializeGUI: 4");
   //limit how much data is plotted...hopefully to speed things up a little
   gui.setDoNotPlotOutsideXlim(true);
-  println("OpenBCI_GUI: initializeGUI: 5");
+  println("Cortex_GUI: initializeGUI: 5");
   gui.setDecimateFactor(2);
-  println("OpenBCI_GUI: initializeGUI: 6");
+  println("Cortex_GUI: initializeGUI: 6");
 }
 
 //======================== DRAW LOOP =============================//
@@ -424,7 +424,7 @@ void systemUpdate() { // for updating data values and variables
         //process the data
         processNewData();
 
-        //try to detect the desired signals, do it in frequency space...for OpenBCI_GUI_Simpler
+        //try to detect the desired signals, do it in frequency space...for Cortex_GUI_Simpler
         //detectInFreqDomain(fftBuff,inband_Hz,guard_Hz,detData_freqDomain);
         //gui.setDetectionData_freqDomain(detData_freqDomain);
         //tell the GUI that it has received new data via dumping new data into arrays that the GUI has pointers to
@@ -440,10 +440,10 @@ void systemUpdate() { // for updating data values and variables
           catch (Exception e) {
             println(e.getMessage());
             reinitializeGUIdelay = reinitializeGUIdelay * 2;
-            println("OpenBCI_GUI: systemUpdate: New GUI reinitialize delay = " + reinitializeGUIdelay);
+            println("Cortex_GUI: systemUpdate: New GUI reinitialize delay = " + reinitializeGUIdelay);
           }
         } else {
-          println("OpenBCI_GUI: systemUpdate: reinitializing GUI after resize... not updating GUI");
+          println("Cortex_GUI: systemUpdate: reinitializing GUI after resize... not updating GUI");
         }
 
         ///add raw data to spectrogram...if the correct channel...
@@ -489,7 +489,7 @@ void systemDraw() { //for drawing to the screen
   if (systemMode == 10) {
     int drawLoopCounter_thresh = 100;
     if ((redrawScreenNow) || (drawLoop_counter >= drawLoopCounter_thresh)) {
-      //if (drawLoop_counter >= drawLoopCounter_thresh) println("OpenBCI_GUI: redrawing based on loop counter...");
+      //if (drawLoop_counter >= drawLoopCounter_thresh) println("Cortex_GUI: redrawing based on loop counter...");
       drawLoop_counter=0; //reset for next time
       redrawScreenNow = false;  //reset for next time
 
@@ -524,11 +524,11 @@ void systemDraw() { //for drawing to the screen
       catch (Exception e) {
         println(e.getMessage());
         reinitializeGUIdelay = reinitializeGUIdelay * 2;
-        println("OpenBCI_GUI: systemDraw: New GUI reinitialize delay = " + reinitializeGUIdelay);
+        println("Cortex_GUI: systemDraw: New GUI reinitialize delay = " + reinitializeGUIdelay);
       }
     } else {
       //reinitializing GUI after resize
-      println("OpenBCI_GUI: systemDraw: reinitializing GUI after resize... not drawing GUI");
+      println("Cortex_GUI: systemDraw: reinitializing GUI after resize... not drawing GUI");
     }
 
     playground.draw();
@@ -612,8 +612,8 @@ int getDataIfAvailable(int pointCounter) {
         }
         pointCounter++;
       } //close the loop over data points
-      //if (eegDataSource==DATASOURCE_PLAYBACKFILE) println("OpenBCI_GUI: getDataIfAvailable: currentTableRowIndex = " + currentTableRowIndex);
-      //println("OpenBCI_GUI: getDataIfAvailable: pointCounter = " + pointCounter);
+      //if (eegDataSource==DATASOURCE_PLAYBACKFILE) println("Cortex_GUI: getDataIfAvailable: currentTableRowIndex = " + currentTableRowIndex);
+      //println("Cortex_GUI: getDataIfAvailable: pointCounter = " + pointCounter);
     } // close "has enough time passed"
   } 
   return pointCounter;
@@ -756,7 +756,7 @@ void appendAndShift(float[] data, float[] newData) {
 void serialEvent(Serial port) {
   //check to see which serial port it is
   if (openBCI.isOpenBCISerial(port)) {
-    // println("OpenBCI_GUI: serialEvent: millis = " + millis());
+    // println("Cortex_GUI: serialEvent: millis = " + millis());
 
     // boolean echoBytes = !openBCI.isStateNormal(); 
     boolean echoBytes;
@@ -785,7 +785,7 @@ void serialEvent(Serial port) {
       fileoutput.writeRawData_dataPacket(dataPacketBuff[curDataPacketInd], openBCI.get_scale_fac_uVolts_per_count(), openBCI.get_scale_fac_accel_G_per_count());
     }
   } else {
-    println("OpenBCI_GUI: serialEvent: received serial data NOT from OpenBCI.");
+    println("Cortex_GUI: serialEvent: received serial data NOT from OpenBCI.");
     inByte = port.read();
   }
 }
@@ -810,7 +810,7 @@ String getDateString() {
 //swtich yard if a click is detected
 void mousePressed() {
 
-  verbosePrint("OpenBCI_GUI: mousePressed: mouse pressed");
+  verbosePrint("Cortex_GUI: mousePressed: mouse pressed");
 
   //if not in initial setup...
   if (systemMode >= 10) {
@@ -914,7 +914,7 @@ void mousePressed() {
       if (gui.isMouseOnFFT(mouseX, mouseY)) {
         GraphDataPoint dataPoint = new GraphDataPoint();
         gui.getFFTdataPoint(mouseX, mouseY, dataPoint);
-        println("OpenBCI_GUI: FFT data point: " + String.format("%4.2f", dataPoint.x) + " " + dataPoint.x_units + ", " + String.format("%4.2f", dataPoint.y) + " " + dataPoint.y_units);
+        println("Cortex_GUI: FFT data point: " + String.format("%4.2f", dataPoint.x) + " " + dataPoint.x_units + ", " + String.format("%4.2f", dataPoint.y) + " " + dataPoint.y_units);
       } else if (gui.headPlot1.isPixelInsideHead(mouseX, mouseY)) {
         //toggle the head plot contours
         gui.headPlot1.drawHeadAsContours = !gui.headPlot1.drawHeadAsContours;
@@ -949,12 +949,12 @@ void mousePressed() {
     //close control panel if you click outside...
     if (systemMode == 10) {
       if (mouseX > 0 && mouseX < controlPanel.w && mouseY > 0 && mouseY < controlPanel.initBox.y+controlPanel.initBox.h) {
-        println("OpenBCI_GUI: mousePressed: clicked in CP box");
+        println("Cortex_GUI: mousePressed: clicked in CP box");
         controlPanel.CPmousePressed();
       }
       //if clicked out of panel
       else {
-        println("OpenBCI_GUI: mousePressed: outside of CP clicked");
+        println("Cortex_GUI: mousePressed: outside of CP clicked");
         controlPanel.isOpen = false;
         controlPanelCollapser.setIsActive(false);
         output("Press the \"Press to Start\" button to initialize the data stream.");
@@ -975,7 +975,7 @@ void mousePressed() {
 
 void mouseReleased() {
 
-  verbosePrint("OpenBCI_GUI: mouseReleased: mouse released");
+  verbosePrint("Cortex_GUI: mouseReleased: mouse released");
 
   //some buttons light up only when being actively pressed.  Now that we've
   //released the mouse button, turn off those buttons.
@@ -993,7 +993,7 @@ void mouseReleased() {
   }
 
   if (screenHasBeenResized) {
-    println("OpenBCI_GUI: mouseReleased: screen has been resized...");
+    println("Cortex_GUI: mouseReleased: screen has been resized...");
     screenHasBeenResized = false;
   }
 
@@ -1013,7 +1013,7 @@ void printRegisters() {
 
 void stopRunning() {
   // openBCI.changeState(0); //make sure it's no longer interpretting as binary
-  verbosePrint("OpenBCI_GUI: stopRunning: stop running...");
+  verbosePrint("Cortex_GUI: stopRunning: stop running...");
   output("Data stream stopped.");
   if (openBCI != null) {
     openBCI.stopDataTransfer();
@@ -1051,11 +1051,11 @@ void updateButtons() {
   //update the stop button with new text based on the current running state
   //gui.stopButton.setActive(isRunning);
   if (isRunning) {
-    //println("OpenBCI_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStop_txt);
+    //println("Cortex_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStop_txt);
     gui.stopButton.setString(Gui_Manager.stopButton_pressToStop_txt); 
     gui.stopButton.setColorNotPressed(color(224, 56, 45));
   } else {
-    //println("OpenBCI_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStart_txt);
+    //println("Cortex_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStart_txt);
     gui.stopButton.setString(Gui_Manager.stopButton_pressToStart_txt);
     gui.stopButton.setColorNotPressed(color(184, 220, 105));
   }
@@ -1100,7 +1100,7 @@ int getPlaybackDataFromTable(Table datatable, int currentTableRowIndex, float sc
   //check to see if we can load a value from the table
   if (currentTableRowIndex >= datatable.getRowCount()) {
     //end of file
-    println("OpenBCI_GUI: getPlaybackDataFromTable: hit the end of the playback data file.  starting over...");
+    println("Cortex_GUI: getPlaybackDataFromTable: hit the end of the playback data file.  starting over...");
     //if (isRunning) stopRunning();
     currentTableRowIndex = 0;
   } else {
@@ -1149,7 +1149,7 @@ boolean isChannelActive(int Ichan) {
 
 //activateChannel: Ichan is [0 nchan-1] (aka zero referenced)
 void activateChannel(int Ichan) {
-  println("OpenBCI_GUI: activating channel " + (Ichan+1));
+  println("Cortex_GUI: activating channel " + (Ichan+1));
   if (eegDataSource == DATASOURCE_NORMAL || eegDataSource == DATASOURCE_NORMAL_W_AUX) {
     if (openBCI.isSerialPortOpen()) {
       verbosePrint("**");
@@ -1162,7 +1162,7 @@ void activateChannel(int Ichan) {
   }
 }  
 void deactivateChannel(int Ichan) {
-  println("OpenBCI_GUI: deactivating channel " + (Ichan+1));
+  println("Cortex_GUI: deactivating channel " + (Ichan+1));
   if (eegDataSource == DATASOURCE_NORMAL || eegDataSource == DATASOURCE_NORMAL_W_AUX) {
     if (openBCI.isSerialPortOpen()) {
       verbosePrint("**");
@@ -1190,7 +1190,7 @@ void deactivateChannel(int Ichan) {
 
 // void toggleChannelImpedanceState(Button but, int Ichan, int code_P_N_Both) {
 //   boolean newstate = false;
-//   println("OpenBCI_GUI: toggleChannelImpedanceState: Ichan " + Ichan + ", code_P_N_Both " + code_P_N_Both);
+//   println("Cortex_GUI: toggleChannelImpedanceState: Ichan " + Ichan + ", code_P_N_Both " + code_P_N_Both);
 //   if ((Ichan >= 0) && (Ichan < gui.impedanceButtonsP.length)) {
 
 //     //find what state we were, because that sets what state we need
@@ -1238,7 +1238,7 @@ void deactivateChannel(int Ichan) {
 void openNewLogFile(String _fileName) {
   //close the file if it's open
   if (fileoutput != null) {
-    println("OpenBCI_GUI: closing log file");
+    println("Cortex_GUI: closing log file");
     closeLogFile();
   }
 
@@ -1318,7 +1318,7 @@ void delay(int delay)
 //    new Thread(new Runnable() {
 //        public void run () {
 //          //System.out.println("SHUTDOWN HOOK");
-//          println("OpenBCI_GUI: executing shutdown code...");
+//          println("Cortex_GUI: executing shutdown code...");
 //          try {
 //            stopRunning();
 //            if (openBCI != null) {

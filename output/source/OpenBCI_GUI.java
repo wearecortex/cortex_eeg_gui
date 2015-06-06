@@ -38,7 +38,7 @@ import java.io.InputStream;
 import java.io.OutputStream; 
 import java.io.IOException; 
 
-public class OpenBCI_GUI extends PApplet {
+public class Cortex_GUI extends PApplet {
 
 ///////////////////////////////////////////////
 //
@@ -351,7 +351,7 @@ public void initSystem(){
       break;
     case DATASOURCE_PLAYBACKFILE:
       //open and load the data file
-      println("OpenBCI_GUI: loading playback data from " + playbackData_fname);
+      println("Cortex_GUI: loading playback data from " + playbackData_fname);
       try {
         playbackData_table = new Table_CSV(playbackData_fname);
       } catch (Exception e) {
@@ -359,7 +359,7 @@ public void initSystem(){
         println("   : quitting...");
         exit();
       }
-      println("OpenBCI_GUI: loading complete.  " + playbackData_table.getRowCount() + " rows of data, which is " + round(PApplet.parseFloat(playbackData_table.getRowCount())/openBCI.fs_Hz) + " seconds of EEG data");
+      println("Cortex_GUI: loading complete.  " + playbackData_table.getRowCount() + " rows of data, which is " + round(PApplet.parseFloat(playbackData_table.getRowCount())/openBCI.fs_Hz) + " seconds of EEG data");
       
       //removing first column of data from data file...the first column is a time index and not eeg data
       playbackData_table.removeColumn(0);
@@ -571,7 +571,7 @@ public void systemUpdate(){ // for updating data values and variables
         //process the data
         processNewData();
   
-        //try to detect the desired signals, do it in frequency space...for OpenBCI_GUI_Simpler
+        //try to detect the desired signals, do it in frequency space...for Cortex_GUI_Simpler
         //detectInFreqDomain(fftBuff,inband_Hz,guard_Hz,detData_freqDomain);
         //gui.setDetectionData_freqDomain(detData_freqDomain);
         //tell the GUI that it has received new data via dumping new data into arrays that the GUI has pointers to
@@ -639,7 +639,7 @@ public void systemDraw(){ //for drawing to the screen
   if(systemMode == 10){
     int drawLoopCounter_thresh = 100;
     if ((redrawScreenNow) || (drawLoop_counter >= drawLoopCounter_thresh)) {
-      //if (drawLoop_counter >= drawLoopCounter_thresh) println("OpenBCI_GUI: redrawing based on loop counter...");
+      //if (drawLoop_counter >= drawLoopCounter_thresh) println("Cortex_GUI: redrawing based on loop counter...");
       drawLoop_counter=0; //reset for next time
       redrawScreenNow = false;  //reset for next time
       
@@ -762,8 +762,8 @@ public int getDataIfAvailable(int pointCounter) {
         }
         pointCounter++;
       } //close the loop over data points
-      //if (eegDataSource==DATASOURCE_PLAYBACKFILE) println("OpenBCI_GUI: getDataIfAvailable: currentTableRowIndex = " + currentTableRowIndex);
-      //println("OpenBCI_GUI: getDataIfAvailable: pointCounter = " + pointCounter);
+      //if (eegDataSource==DATASOURCE_PLAYBACKFILE) println("Cortex_GUI: getDataIfAvailable: currentTableRowIndex = " + currentTableRowIndex);
+      //println("Cortex_GUI: getDataIfAvailable: pointCounter = " + pointCounter);
     } // close "has enough time passed"
   } 
   return pointCounter;
@@ -1027,7 +1027,7 @@ public void mousePressed() {
       if (gui.isMouseOnFFT(mouseX,mouseY)) {
         GraphDataPoint dataPoint = new GraphDataPoint();
         gui.getFFTdataPoint(mouseX,mouseY,dataPoint);
-        println("OpenBCI_GUI: FFT data point: " + String.format("%4.2f",dataPoint.x) + " " + dataPoint.x_units + ", " + String.format("%4.2f",dataPoint.y) + " " + dataPoint.y_units);
+        println("Cortex_GUI: FFT data point: " + String.format("%4.2f",dataPoint.x) + " " + dataPoint.x_units + ", " + String.format("%4.2f",dataPoint.y) + " " + dataPoint.y_units);
       } else if (gui.headPlot1.isPixelInsideHead(mouseX,mouseY)) {
         //toggle the head plot contours
         gui.headPlot1.drawHeadAsContours = !gui.headPlot1.drawHeadAsContours;
@@ -1159,11 +1159,11 @@ public void startRunning() {
 public void stopButtonWasPressed() {
   //toggle the data transfer state of the ADS1299...stop it or start it...
   if (isRunning) {
-    println("openBCI_GUI: stopButton was pressed...stopping data transfer...");
+    println("Cortex_GUI: stopButton was pressed...stopping data transfer...");
     stopRunning();
   } 
   else { //not running
-    println("openBCI_GUI: startButton was pressed...starting data transfer...");
+    println("Cortex_GUI: startButton was pressed...starting data transfer...");
     startRunning();
     nextPlayback_millis = millis();  //used for synthesizeData and readFromFile.  This restarts the clock that keeps the playback at the right pace.
   }
@@ -1173,12 +1173,12 @@ public void updateButtons(){
   //update the stop button with new text based on the current running state
   //gui.stopButton.setActive(isRunning);
   if (isRunning) {
-    //println("OpenBCI_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStop_txt);
+    //println("Cortex_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStop_txt);
     gui.stopButton.setString(Gui_Manager.stopButton_pressToStop_txt); 
     gui.stopButton.setColorNotPressed(color(224, 56, 45));
   } 
   else {
-    //println("OpenBCI_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStart_txt);
+    //println("Cortex_GUI: stopButtonWasPressed (a): changing string to " + Gui_Manager.stopButton_pressToStart_txt);
     gui.stopButton.setString(Gui_Manager.stopButton_pressToStart_txt);
     gui.stopButton.setColorNotPressed(color(184,220,105));
   }
@@ -1214,7 +1214,7 @@ public int getPlaybackDataFromTable(Table datatable, int currentTableRowIndex, f
   //check to see if we can load a value from the table
   if (currentTableRowIndex >= datatable.getRowCount()) {
     //end of file
-    println("OpenBCI_GUI: hit the end of the playback data file.  starting over...");
+    println("Cortex_GUI: hit the end of the playback data file.  starting over...");
     //if (isRunning) stopRunning();
     currentTableRowIndex = 0;
   } else {
@@ -1273,7 +1273,7 @@ public boolean isChannelActive(int Ichan) {
 
 //activateChannel: Ichan is [0 nchan-1] (aka zero referenced)
 public void activateChannel(int Ichan) {
-  println("OpenBCI_GUI: activating channel " + (Ichan+1));
+  println("Cortex_GUI: activating channel " + (Ichan+1));
   if(eegDataSource == DATASOURCE_NORMAL || eegDataSource == DATASOURCE_NORMAL_W_AUX){
     if (serial_openBCI != null){
       verbosePrint("**");
@@ -1287,7 +1287,7 @@ public void activateChannel(int Ichan) {
   }
 }  
 public void deactivateChannel(int Ichan) {
-  println("OpenBCI_GUI: deactivating channel " + (Ichan+1));
+  println("Cortex_GUI: deactivating channel " + (Ichan+1));
   if(eegDataSource == DATASOURCE_NORMAL || eegDataSource == DATASOURCE_NORMAL_W_AUX){
     if (serial_openBCI != null) {
       verbosePrint("***");
@@ -1316,7 +1316,7 @@ public void deactivateChannel(int Ichan) {
 
 // void toggleChannelImpedanceState(Button but, int Ichan, int code_P_N_Both) {
 //   boolean newstate = false;
-//   println("OpenBCI_GUI: toggleChannelImpedanceState: Ichan " + Ichan + ", code_P_N_Both " + code_P_N_Both);
+//   println("Cortex_GUI: toggleChannelImpedanceState: Ichan " + Ichan + ", code_P_N_Both " + code_P_N_Both);
 //   if ((Ichan >= 0) && (Ichan < gui.impedanceButtonsP.length)) {
 
 //     //find what state we were, because that sets what state we need
@@ -1364,7 +1364,7 @@ public void deactivateChannel(int Ichan) {
 public void openNewLogFile(String _fileName) {
   //close the file if it's open
   if (fileoutput != null) {
-    println("OpenBCI_GUI: closing log file");
+    println("Cortex_GUI: closing log file");
     closeLogFile();
   }
   
@@ -1439,7 +1439,7 @@ public void delay(int delay)
 //    new Thread(new Runnable() {
 //        public void run () {
 //          //System.out.println("SHUTDOWN HOOK");
-//          println("OpenBCI_GUI: executing shutdown code...");
+//          println("Cortex_GUI: executing shutdown code...");
 //          try {
 //            stopRunning();
 //            if (openBCI != null) {
@@ -2377,7 +2377,7 @@ class ControlPanel {
 
 	boolean convertingSD = false;
 
-	ControlPanel(OpenBCI_GUI mainClass){
+	ControlPanel(Cortex_GUI mainClass){
 
 		x = 2;
 		y = 2 + controlPanelCollapser.but_dy;		
@@ -3863,8 +3863,8 @@ class Gui_Manager {
     g.setYAxisTickSpacing(1);
     g.setYAxisMinorTicks(0);
     g.setYAxisLabelAccuracy(0);
-    //g.setYAxisLabel("EEG Amplitude (uV/sqrt(Hz))");  // Some people prefer this...but you'll have to change the normalization in OpenBCI_GUI\processNewData()
-    g.setYAxisLabel("EEG Amplitude (uV per bin)");  // CHIP 2014-10-24...currently, this matches the normalization in OpenBCI_GUI\processNewData()
+    //g.setYAxisLabel("EEG Amplitude (uV/sqrt(Hz))");  // Some people prefer this...but you'll have to change the normalization in Cortex_GUI\processNewData()
+    g.setYAxisLabel("EEG Amplitude (uV per bin)");  // CHIP 2014-10-24...currently, this matches the normalization in Cortex_GUI\processNewData()
     g.setYAxisLabelFont(fontInfo.fontName,fontInfo.axisLabel_size, false);
     g.setYAxisTickFont(fontInfo.fontName,fontInfo.tickLabel_size, false);
   
@@ -3952,7 +3952,7 @@ class Gui_Manager {
     gMontage.addTrace(montageTrace);
     montageTrace.setXYData_byRef(dataBuffX, dataBuffY);
     montageTrace.setYScaleFac(1f / vertScale_uV);
-    //montageTrace.setYScaleFac(1.0f); //for OpenBCI_GUI_Simpler
+    //montageTrace.setYScaleFac(1.0f); //for Cortex_GUI_Simpler
     
     //set the y-offsets for each trace in the fft plot.
     //have each trace bumped down by -1.0.
@@ -6065,7 +6065,7 @@ class OpenBCI_ADS1299 {
 //
 //  This file contains all key commands for interactivity with GUI & OpenBCI
 //  Created by Chip Audette, Joel Murphy, & Conor Russomanno
-//  - Extracted from OpenBCI_GUI because it was getting too klunky
+//  - Extracted from Cortex_GUI because it was getting too klunky
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -6073,7 +6073,7 @@ class OpenBCI_ADS1299 {
 public void keyPressed() {
   //note that the Processing variable "key" is the keypress as an ASCII character
   //note that the Processing variable "keyCode" is the keypress as a JAVA keycode.  This differs from ASCII  
-  //println("OpenBCI_GUI: keyPressed: key = " + key + ", int(key) = " + int(key) + ", keyCode = " + keyCode);
+  //println("Cortex_GUI: keyPressed: key = " + key + ", int(key) = " + int(key) + ", keyCode = " + keyCode);
   
   if(!controlPanel.isOpen){ //don't parse the key if the control panel is open
     if ((PApplet.parseInt(key) >=32) && (PApplet.parseInt(key) <= 126)) {  //32 through 126 represent all the usual printable ASCII characters
@@ -6305,12 +6305,12 @@ public void parseKey(char val) {
       
     case 'm':
      String picfname = "OpenBCI-" + getDateString() + ".jpg";
-     println("OpenBCI_GUI: 'm' was pressed...taking screenshot:" + picfname);
+     println("Cortex_GUI: 'm' was pressed...taking screenshot:" + picfname);
      saveFrame(picfname);    // take a shot of that!
      break;
 
     default:
-     println("OpenBCI_GUI: '" + key + "' Pressed...sending to OpenBCI...");
+     println("Cortex_GUI: '" + key + "' Pressed...sending to OpenBCI...");
      // if (openBCI.serial_openBCI != null) openBCI.serial_openBCI.write(key);//send the value as ascii with a newline character
      if (serial_openBCI != null) serial_openBCI.write(key);//send the value as ascii with a newline character
     
@@ -6322,100 +6322,100 @@ public void parseKeycode(int val) {
   //assumes that val is Java keyCode
   switch (val) {
     case 8:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received BACKSPACE keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received BACKSPACE keypress.  Ignoring...");
       break;   
     case 9:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received TAB keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received TAB keypress.  Ignoring...");
       //gui.showImpedanceButtons = !gui.showImpedanceButtons;
       // gui.incrementGUIpage(); //deprecated with new channel controller
       break;    
     case 10:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received ENTER keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received ENTER keypress.  Ignoring...");
       break;
     case 16:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received SHIFT keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received SHIFT keypress.  Ignoring...");
       break;
     case 17:
-      //println("OpenBCI_GUI: parseKeycode(" + val + "): received CTRL keypress.  Ignoring...");
+      //println("Cortex_GUI: parseKeycode(" + val + "): received CTRL keypress.  Ignoring...");
       break;
     case 18:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received ALT keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received ALT keypress.  Ignoring...");
       break;
     case 20:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received CAPS LOCK keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received CAPS LOCK keypress.  Ignoring...");
       break;
     case 27:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received ESC keypress.  Stopping OpenBCI...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received ESC keypress.  Stopping OpenBCI...");
       stopRunning();
       break; 
     case 33:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received PAGE UP keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received PAGE UP keypress.  Ignoring...");
       break;    
     case 34:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received PAGE DOWN keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received PAGE DOWN keypress.  Ignoring...");
       break;
     case 35:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received END keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received END keypress.  Ignoring...");
       break; 
     case 36:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received HOME keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received HOME keypress.  Ignoring...");
       break; 
     case 37:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received LEFT ARROW keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received LEFT ARROW keypress.  Ignoring...");
       break;  
     case 38:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received UP ARROW keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received UP ARROW keypress.  Ignoring...");
       break;  
     case 39:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received RIGHT ARROW keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received RIGHT ARROW keypress.  Ignoring...");
       break;  
     case 40:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received DOWN ARROW keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received DOWN ARROW keypress.  Ignoring...");
       break;
     case 112:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F1 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F1 keypress.  Ignoring...");
       break;
     case 113:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F2 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F2 keypress.  Ignoring...");
       break;  
     case 114:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F3 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F3 keypress.  Ignoring...");
       break;  
     case 115:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F4 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F4 keypress.  Ignoring...");
       break;  
     case 116:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F5 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F5 keypress.  Ignoring...");
       break;  
     case 117:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F6 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F6 keypress.  Ignoring...");
       break;  
     case 118:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F7 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F7 keypress.  Ignoring...");
       break;  
     case 119:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F8 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F8 keypress.  Ignoring...");
       break;  
     case 120:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F9 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F9 keypress.  Ignoring...");
       break;  
     case 121:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F10 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F10 keypress.  Ignoring...");
       break;  
     case 122:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F11 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F11 keypress.  Ignoring...");
       break;  
     case 123:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received F12 keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received F12 keypress.  Ignoring...");
       break;     
     case 127:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received DELETE keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received DELETE keypress.  Ignoring...");
       break;
     case 155:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): received INSERT keypress.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): received INSERT keypress.  Ignoring...");
       break; 
     default:
-      println("OpenBCI_GUI: parseKeycode(" + val + "): value is not known.  Ignoring...");
+      println("Cortex_GUI: parseKeycode(" + val + "): value is not known.  Ignoring...");
       break;
   }
 }
@@ -7754,7 +7754,7 @@ public void rereferenceTheMontage(float[][] data) {
   
 
   static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "OpenBCI_GUI" };
+    String[] appletArgs = new String[] { "Cortex_GUI" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {
