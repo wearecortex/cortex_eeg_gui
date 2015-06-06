@@ -91,7 +91,7 @@ class ControlPanel {
 
   boolean convertingSD = false;
 
-  ControlPanel(OpenBCI_GUI mainClass) {
+  ControlPanel(Cortex_GUI mainClass) {
 
     x = 2;
     y = 2 + controlPanelCollapser.but_dy;		
@@ -547,20 +547,20 @@ class DataLogBox {
 
     cp5.addTextfield("fileName")
       .setPosition(x + 90, y + 32)
-      .setCaptionLabel("")
-      .setSize(157, 26)
-      .setFont(f2)
-      .setFocus(false)
-      .setColor(color(26, 26, 26))
-      .setColorBackground(color(255, 255, 255)) // text field bg color
-      .setColorValueLabel(color(0, 0, 0))  // text color
-      .setColorForeground(isSelected_color)  // border color when not selected
-      .setColorActive(isSelected_color)  // border color when selected
-      .setColorCursor(color(26, 26, 26)) 
-      .setText(getDateString())
-      .align(5, 10, 20, 40) 
-      .onDoublePress(cb) 
-      .setAutoClear(true);
+        .setCaptionLabel("")
+          .setSize(157, 26)
+            .setFont(f2)
+              .setFocus(false)
+                .setColor(color(26, 26, 26))
+                  .setColorBackground(color(255, 255, 255)) // text field bg color
+                    .setColorValueLabel(color(0, 0, 0))  // text color
+                      .setColorForeground(isSelected_color)  // border color when not selected
+                        .setColorActive(isSelected_color)  // border color when selected
+                          .setColorCursor(color(26, 26, 26)) 
+                            .setText(getDateString())
+                              .align(5, 10, 20, 40) 
+                                .onDoublePress(cb) 
+                                  .setAutoClear(true);
 
     //clear text field on double click
   }
@@ -685,7 +685,7 @@ class SDBox {
     sdTimes.addItem(makeItem("4 hour maximum"));
     sdTimes.addItem(makeItem("12 hour maximum"));
     sdTimes.addItem(makeItem("24 hour maximum"));
-    
+
     sdTimes.activeItem = sdSetting; //added to indicate default choice (sdSetting is in OpenBCI_GUI)
   }
 
@@ -703,9 +703,8 @@ class SDBox {
     textAlign(LEFT, TOP);
     text("WRITE TO SD (Y/N)?", x + padding, y + padding);
     popStyle();
-  
-    //the drawing of the sdTimes is handled earlier in ControlPanel.draw()
 
+    //the drawing of the sdTimes is handled earlier in ControlPanel.draw()
   }
 };
 
@@ -787,7 +786,6 @@ void playbackSelected(File selection) {
     playbackData_fname = selection.getAbsolutePath();
   }
 }
-
 
 
 
