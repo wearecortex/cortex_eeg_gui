@@ -29,7 +29,7 @@ import java.awt.event.*; //to allow for event listener on screen resize
 import processing.serial.*;
 
 // The serial port:
-Serial myPort;
+//Serial myPort;
 
 
 boolean isVerbose = false; //set true if you want more verbosity in console
@@ -163,7 +163,7 @@ PFont f3;
 //========================SETUP============================//
 //========================SETUP============================//
 void setup() {
-  myPort = new Serial(this, "/dev/ttyACM0", 9600);
+  //myPort = new Serial(this, "COM3", 9600);
   //open window
   size(win_x, win_y, P2D);
   // size(displayWidth, displayHeight, P2D);
@@ -670,10 +670,10 @@ void processNewData() {
     if (Ichan == 0) {
       println(fftBuff[Ichan].getBand(10));
       if (fftBuff[Ichan].getBand(10) > 400.0) {
-        myPort.write(1);
+        //myPort.write(1);
         println("1");
       } else {
-        myPort.write(0);
+        //myPort.write(0);
         println("0");
       }
     }
